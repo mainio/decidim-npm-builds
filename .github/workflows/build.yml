@@ -1,7 +1,7 @@
 name: Build the NPM tarballs
 on:
   schedule:
-    - cron: '0 10 * * *'
+    - cron: '20 * * * *'
 
 env:
   FILTER_BRANCH_SQUELCH_WARNING: 1
