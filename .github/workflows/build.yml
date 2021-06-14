@@ -43,7 +43,7 @@ jobs:
       - name: Checkout version branch
         run: |
           BRANCH_NAME="version/${PACKAGE_VERSION}"
-          (git checkout --track "origin/${BRANCH_NAME}" && git pull) &> /dev/null || git checkout -b "$BRANCH_NAME"
+          (git checkout --track "origin/${BRANCH_NAME}" && git pull) || git checkout -b "$BRANCH_NAME"
           git merge main -m "Merge"
       - name: NPM pack version
         run: |
