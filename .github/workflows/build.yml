@@ -44,7 +44,6 @@ jobs:
         run: |
           BRANCH_NAME="version/${PACKAGE_VERSION}"
           (git fetch origin "$BRANCH_NAME" && git checkout "$BRANCH_NAME") || git checkout -b "$BRANCH_NAME"
-          git merge main -m "Merge"
       - name: NPM pack version
         run: |
           sed -ri "s|decidim-npm-builds/raw/main/|decidim-npm-builds/raw/version/${PACKAGE_VERSION}/|g" packages/*/package.json
