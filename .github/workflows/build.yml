@@ -48,7 +48,7 @@ jobs:
           git diff-index --quiet HEAD -- || (git commit -m "New build" && git push)
       - name: Commit version branch
         run: |
-          BRANCH_NAME="version/${{ steps.package-version.outputs.SELECTED_COLOR }}"
+          BRANCH_NAME="version/${{ steps.package-version.outputs.PACKAGE_VERSION }}"
           git checkout "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
           git merge main -m "Merge main"
           git push origin "$BRANCH_NAME"
