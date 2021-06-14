@@ -23,11 +23,9 @@ jobs:
           cd ..
       - name: Set version
         run: echo "PACKAGE_VERSION=$(jq -r '.version' ./packages/all/package.json)" >> $GITHUB_ENV
-      - name: Change the package references to GitHub
+      - name: NPM pack main
         run: |
           sed -ri 's|file:\.\./([^"]*)|https://github.com/mainio/decidim-npm-builds/raw/main/builds/decidim-\1.tgz|g' packages/*/package.json
-      - name: NPM pack
-        run: |
           rm -rf builds
           mkdir builds
           for f in packages/*; do
@@ -36,19 +34,31 @@ jobs:
               mv "$f/decidim-$(basename $f)"* "builds/decidim-$(basename $f).tgz"
             fi
           done
-      - name: Remove the packages folder
-        run: |
-          rm -rf packages
       - name: Commit changes
         run: |
           git config --global user.name 'Decidim Builds'
           git config --global user.email 'decidim.builds@mainiotech.fi'
-          git add -A
+          git add builds/*
           git diff-index --quiet HEAD -- || (git commit -m "New build" && git push)
-      - name: Commit version branch
+      - name: Checkout version branch
         run: |
           BRANCH_NAME="version/${PACKAGE_VERSION}"
           git checkout "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
-          git merge main -m "Merge main"
-          git push origin "$BRANCH_NAME"
-
+      - name: NPM pack version
+        run: |
+          sed -ri "s|decidim-npm-builds/raw/main/|decidim-npm-builds/raw/version/${PACKAGE_VERSION}/|g" packages/*/package.json
+          rm -rf builds
+          mkdir builds
+          for f in packages/*; do
+            if [ -f "$f/package.json" ]; then
+              (cd "$f"; npm pack)
+              mv "$f/decidim-$(basename $f)"* "builds/decidim-$(basename $f).tgz"
+            fi
+          done
+      - name: Commit version branch
+        run: |
+          git add builds/*
+          git diff-index --quiet HEAD -- || (git commit -m "New build" && git push origin "version/${PACKAGE_VERSION}")
+      - name: Remove the packages folder
+        run: |
+          rm -rf packages
