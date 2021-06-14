@@ -27,7 +27,7 @@ jobs:
         run: |
           rm -rf builds
           mkdir builds
-          for f in *; do
+          for f in packages/*; do
             if [ -f "$f/package.json" ]; then
               (cd "$f"; npm pack)
               mv "$f/decidim-$(basename $f)"* "builds/decidim-$(basename $f).tgz"
