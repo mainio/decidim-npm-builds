@@ -43,7 +43,7 @@ jobs:
       - name: Checkout version branch
         run: |
           BRANCH_NAME="version/${PACKAGE_VERSION}"
-          git checkout "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
+          git checkout origin "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
       - name: NPM pack version
         run: |
           sed -ri "s|decidim-npm-builds/raw/main/|decidim-npm-builds/raw/version/${PACKAGE_VERSION}/|g" packages/*/package.json
