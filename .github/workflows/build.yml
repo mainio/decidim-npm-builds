@@ -1,0 +1,45 @@
+name: Build the NPM tarballs
+on:
+  schedule:
+    - cron: '0 10 * * *'
+
+env:
+  FILTER_BRANCH_SQUELCH_WARNING: 1
+
+jobs:
+  get-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.0.0
+        with:
+          fetch-depth: 1
+      - name: Fetch the packages folder
+        run: |
+          git clone --single-branch --branch feature/split-npm-packages --depth=1 https://github.com/mainio/decidim packages
+          cd packages
+          git filter-branch --prune-empty --subdirectory-filter packages HEAD
+          rm -rf .git
+          cd ..
+      - name: Change the package references to GitHub
+        run: |
+          sed -ri 's|file:\.\./([^"]*)|https://raw.githubusercontent.com/mainio/decidim-npm-builds/main/builds/\1.tgz|g' packages/*/package.json
+      - name: NPM pack
+        run: |
+          rm -rf builds
+          mkdir builds
+          for f in *; do
+            if [ -f "$f/package.json" ]; then
+              (cd "$f"; npm pack)
+              mv "$f/decidim-$(basename $f)"* "builds/decidim-$(basename $f).tgz"
+            fi
+          done
+      - name: Remove the packages folder
+        run: |
+          rm -rf packages
+      - name: Commit changes
+        run: |
+          git config --global user.name 'Decidim Builds'
+          git config --global user.email 'decidim.builds@mainiotech.fi'
+          git add -A
+          git diff-index --quiet HEAD -- || (git commit -m "New build" && git push)
+
