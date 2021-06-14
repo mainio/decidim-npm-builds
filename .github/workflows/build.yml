@@ -21,6 +21,9 @@ jobs:
           git filter-branch --prune-empty --subdirectory-filter packages HEAD
           rm -rf .git
           cd ..
+      - name: Set version
+        run: echo "::set-output name=PACKAGE_VERSION::$(jq -r '.version' ./packages/all/package.json)"
+        id: package-version
       - name: Change the package references to GitHub
         run: |
           sed -ri 's|file:\.\./([^"]*)|https://github.com/mainio/decidim-npm-builds/raw/main/builds/decidim-\1.tgz|g' packages/*/package.json
@@ -43,4 +46,10 @@ jobs:
           git config --global user.email 'decidim.builds@mainiotech.fi'
           git add -A
           git diff-index --quiet HEAD -- || (git commit -m "New build" && git push)
+      - name: Commit version branch
+        run: |
+          BRANCH_NAME="version/${{ steps.package-version.outputs.SELECTED_COLOR }}"
+          git checkout "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
+          git merge main -m "Merge main"
+          git push origin "$BRANCH_NAME"
 
