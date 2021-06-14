@@ -2,6 +2,7 @@ name: Build the NPM tarballs
 on:
   schedule:
     - cron: '20 * * * *'
+  workflow_dispatch:
 
 env:
   FILTER_BRANCH_SQUELCH_WARNING: 1
