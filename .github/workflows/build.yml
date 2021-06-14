@@ -23,7 +23,7 @@ jobs:
           cd ..
       - name: Change the package references to GitHub
         run: |
-          sed -ri 's|file:\.\./([^"]*)|https://github.com/mainio/decidim-npm-builds/raw/main/builds/\1.tgz|g' packages/*/package.json
+          sed -ri 's|file:\.\./([^"]*)|https://github.com/mainio/decidim-npm-builds/raw/main/builds/decidim-\1.tgz|g' packages/*/package.json
       - name: NPM pack
         run: |
           rm -rf builds
