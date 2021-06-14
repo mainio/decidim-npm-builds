@@ -7,7 +7,7 @@ env:
   FILTER_BRANCH_SQUELCH_WARNING: 1
 
 jobs:
-  get-version:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2.0.0
