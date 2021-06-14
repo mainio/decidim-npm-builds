@@ -22,8 +22,7 @@ jobs:
           rm -rf .git
           cd ..
       - name: Set version
-        run: echo "::set-output name=PACKAGE_VERSION::$(jq -r '.version' ./packages/all/package.json)"
-        id: package-version
+        run: echo "PACKAGE_VERSION=$(jq -r '.version' ./packages/all/package.json)" >> $GITHUB_ENV
       - name: Change the package references to GitHub
         run: |
           sed -ri 's|file:\.\./([^"]*)|https://github.com/mainio/decidim-npm-builds/raw/main/builds/decidim-\1.tgz|g' packages/*/package.json
@@ -48,7 +47,7 @@ jobs:
           git diff-index --quiet HEAD -- || (git commit -m "New build" && git push)
       - name: Commit version branch
         run: |
-          BRANCH_NAME="version/${{ steps.package-version.outputs.PACKAGE_VERSION }}"
+          BRANCH_NAME="version/${PACKAGE_VERSION}"
           git checkout "$BRANCH_NAME" &> /dev/null || git checkout -b "$BRANCH_NAME"
           git merge main -m "Merge main"
           git push origin "$BRANCH_NAME"
