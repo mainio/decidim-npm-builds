@@ -16,7 +16,7 @@ jobs:
           fetch-depth: 1
       - name: Fetch the packages folder
         run: |
-          git clone --single-branch --branch feature/split-npm-packages --depth=1 https://github.com/mainio/decidim packages
+          git clone --single-branch --branch develop --depth=1 https://github.com/decidim/decidim packages
           cd packages
           git filter-branch --prune-empty --subdirectory-filter packages HEAD
           rm -rf .git
