@@ -1,7 +1,5 @@
 name: Build the NPM tarballs
 on:
-  schedule:
-    - cron: '20 * * * *'
   workflow_dispatch:
 
 env:
